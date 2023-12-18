@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response as HttpResponse;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -26,5 +28,17 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::get('/contact', fn() => Response::view('contact'));
 
 Route::post('/contact', function (Request $request) {
-    dd($request->get('name'));
+    return Response::json([
+        'success' => true
+    ]);
+});
+
+Route::get('/change-password', fn() => Response::view('change-password'));
+
+Route::post('/change-password', function (Request $request) {
+       if (auth()->check()){
+           return response("Password Changed to: {$request->get('password')}", 200);
+       }else {
+           return response("Not Authorized,401");
+   }
 });
