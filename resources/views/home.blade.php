@@ -12,7 +12,9 @@
         <div class="col-md-4 mb-3">
           <div class="card text-center">
             <div class="card-body">
-              <h3 class="card-title text-capitalize">{{$contact->name}}</h3>
+              <a class = "text-decoration-none text-light" href="{{route("contacts.show",$contact->id)}}">
+                <h3 class="card-title text-capitalize">{{$contact->name}}</h3>
+              </a>
               <p class="m-2"><strong>Phone:</strong> {{ $contact->phone_number}}</p>
               <p class="m-2"><strong>Email:</strong> {{ $contact->email }}</p>
               <p class="m-2"><strong>Age:</strong> {{ $contact->age }}</p>
