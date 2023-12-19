@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Contact;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Response;
 
 class ContactController extends Controller
 {
@@ -29,8 +30,24 @@ class ContactController extends Controller
      */
     public function store(Request $request)
     {
-        Contact::create($request->all());
-        session()->flash('success', 'Your message has been sent successfully.');
+        if(is_null($request->name)) {
+            session()->flash('error', 'Name is required');
+            return back()->withErrors([
+            //return Response::redirectTo('/contacts/create')->withErrors([
+                'name' => 'Name is required',
+            ]);
+        }else if (is_null($request->phone_number)) {
+            session()->flash('error', 'Phone number is required');
+            return back()->withErrors([
+                'phone_number' => 'Phone number is required',
+            ]);
+        }
+
+        Contact::create([
+            'name' => $request->name,
+            'phone_number' => $request->phone_number
+        ]);
+        session()->flash('success', 'Your contact has been added');
         return redirect('/home');
     }
 

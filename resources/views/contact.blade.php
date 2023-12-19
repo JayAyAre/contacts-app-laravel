@@ -15,8 +15,13 @@
 
                                 <div class="col-md-6">
                                     <input id="name" type="text"
-                                           class="form-control" name="name"
-                                           required autocomplete="name" autofocus>
+                                           class="form-control @error('name') is-invalid @enderror" name="name"
+                                           autocomplete="name" autofocus>
+                                    @error('name')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                    @enderror
                                 </div>
                             </div>
 
@@ -26,8 +31,13 @@
 
                                 <div class="col-md-6">
                                     <input id="phone_number" type="tel"
-                                           class="form-control" name="phone_number"
-                                           required autocomplete="email">
+                                           class="form-control @error('phone_number') is-invalid @enderror" name="phone_number"
+                                           autocomplete="email">
+                                    @error('phone_number')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                    @enderror
                                 </div>
                             </div>
 
