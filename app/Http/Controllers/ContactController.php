@@ -6,6 +6,7 @@ use App\Models\Contact;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Validation\Rule;
+use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class ContactController extends Controller
 {
@@ -50,8 +51,9 @@ class ContactController extends Controller
    */
   public function show(Contact $contact)
   {
+    $this->authorize('view', $contact);
     $contacts = auth()->user()->contacts()->get();
-    return view('contacts.show', compact('contact'));
+    return view('contacts.show', compact('contacts'));
   }
 
   /**
@@ -59,6 +61,7 @@ class ContactController extends Controller
    */
   public function edit(Contact $contact)
   {
+    $this->authorize('update', $contact);
     return view('contacts.edit', compact('contact'));
   }
 
@@ -67,6 +70,7 @@ class ContactController extends Controller
    */
   public function update(Request $request, Contact $contact)
   {
+    $this->authorize('update', $contact);
     $data = $request->validate([
         "name" => ["required","string"],
         "phone_number" => ["required","digits:9"],
@@ -83,6 +87,7 @@ class ContactController extends Controller
    */
   public function destroy(Contact $contact)
   {
+    $this->authorize('delete', $contact);
     $contact->delete();
     return redirect()->route("home");
   }
