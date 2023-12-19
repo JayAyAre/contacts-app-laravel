@@ -21,11 +21,12 @@ use Illuminate\Support\Facades\DB;
 |
 */
 
-Route::get('/', fn() => \auth()->check() ? redirect('/home') : redirect('/welcome'));
+Route::get('/', fn() => auth()->check() ? redirect('/home') : redirect('/welcome'));
 
 Auth::routes();
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
+Route::get('/welcome', [HomeController::class, 'welcome'])->name('welcome');
 
 Route::resource('contacts', ContactController::class);
 

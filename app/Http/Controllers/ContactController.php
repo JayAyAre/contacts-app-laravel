@@ -10,12 +10,15 @@ use Illuminate\Validation\Rule;
 class ContactController extends Controller
 {
   //php artisan make:controller -m Contact ContactController
+  //php artisan tinker to test querys
+
   /**
    * Display a listing of the resource.
    */
   public function index()
   {
-    return view('contacts.index', ['contacts' => Contact::all()]);
+    $contacts = auth()->user()->contacts()->get();
+    return view('contacts.index', compact('contacts'));
   }
 
   /**
@@ -31,20 +34,13 @@ class ContactController extends Controller
    */
   public function store(Request $request)
   {
-    $request->validate([
+    $data = $request->validate([
       "name" => ["required","string"],
       "phone_number" => ["required","digits:9"],
       "email" => ["required","email","unique:contacts,email"],
       "age" => ["required","min:18","numeric","max:255"],
       ]);
-
-    Contact::create([
-        'name' => $request->name,
-        'phone_number' => $request->phone_number,
-        'email' => $request->email,
-        'age' => $request->age
-    ]);
-
+    auth()->user()->contacts()->create($data);
     session()->flash('success', 'Your contact has been added');
     return redirect()->route("home");
   }
@@ -54,6 +50,7 @@ class ContactController extends Controller
    */
   public function show(Contact $contact)
   {
+    $contacts = auth()->user()->contacts()->get();
     return view('contacts.show', compact('contact'));
   }
 
@@ -76,8 +73,7 @@ class ContactController extends Controller
         "email" => ["required","email",Rule::unique('contacts')->ignore($contact->id)],
         "age" => ["required","min:18","numeric","max:255"],
     ]);
-
-    $contact->update($data);
+    auth()->user()->contacts()->update($data);
     session()->flash('success', 'Your contact has been modified');
     return redirect()->route("home");
   }

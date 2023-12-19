@@ -22,7 +22,7 @@
       <div class="col-md-4 mx-auto">
         <div class="card car-body text-center">
           <p>No contacts</p>
-          <a href="{{route("contact.create")}}" class="btn btn-primary">Add contact</a>
+          <a href="{{route("contacts.create")}}" class="btn btn-primary">Add contact</a>
         </div>
       </div>
     @endforelse
