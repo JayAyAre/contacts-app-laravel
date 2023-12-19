@@ -15,6 +15,7 @@
 
     <!-- Scripts -->
     <link rel="stylesheet" href="{{ mix('css/app.css') }}">
+
     @stack('scripts')
 
     <script src="{{ mix('js/app.js') }}" defer></script>

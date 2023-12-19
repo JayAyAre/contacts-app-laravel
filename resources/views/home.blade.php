@@ -1,29 +1,33 @@
 @extends('layouts.app')
 
 @section('content')
-    <?php if (session()->has('success')): ?>
+  @if(session()->has('success'))
     <div class="alert alert-success">
-            <?php echo e(session()->get('success')); ?>
+      {{ session()->get('success') }}
     </div>
-    <?php endif; ?>
-
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-md-8">
-                    <div class="card">
-                        <div class="card-header">{{ __('Dashboard') }}</div>
-
-                        <div class="card-body">
-                            @if (session('status'))
-                                <div class="alert alert-success" role="alert">
-                                    {{ session('status') }}
-                                </div>
-                            @endif
-
-                            {{ __('You are logged in!') }}
-                </div>
-            </div>
+  @endif
+  <div class="container pt-4 pt-3">
+    <div class="row">
+      @forelse($contacts as $contact)
+        <div class="col-md-4 mb-3">
+          <div class="card text-center">
+            <div class="card-body">
+              <h3 class="card-title text-capitalize">{{$contact->name}}</h3>
+              <p class="m-2"><strong>Phone:</strong> {{ $contact->phone_number}}</p>
+              <p class="m-2"><strong>Email:</strong> {{ $contact->email }}</p>
+              <p class="m-2"><strong>Age:</strong> {{ $contact->age }}</p>
+              <a href="{{route("contacts.edit",$contact->id)}}" class="btn btn-secondary">Edit contact</a>
+              {{--<a href="{{route("contact.destroy")}}" class="btn btn-danger">Delete contact</a>
+            --}}</div>
+          </div>
         </div>
-    </div>
-</div>
+      @empty
+        <div class="col-md-4 mx-auto">
+          <div class="card car-body text-center">
+            <p>No contacts</p>
+            <a href="{{route("contact.create")}}" class="btn btn-primary">Add contact</a>
+          </div>
+        </div>
+  @endforelse
+
 @endsection

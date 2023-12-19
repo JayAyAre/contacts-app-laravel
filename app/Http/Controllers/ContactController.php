@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Contact;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Validation\Rule;
 
 class ContactController extends Controller
 {
@@ -22,7 +23,7 @@ class ContactController extends Controller
    */
   public function create()
   {
-    return view('contact');
+    return view('contacts.create');
   }
 
   /**
@@ -32,41 +33,20 @@ class ContactController extends Controller
   {
     $request->validate([
       "name" => ["required","string"],
-      "phone_number" => ["required","telephone","digits:9"],
+      "phone_number" => ["required","digits:9"],
       "email" => ["required","email","unique:contacts,email"],
       "age" => ["required","min:18","numeric","max:255"],
       ]);
 
-
-    /*        if(is_null($request->name)) {
-                session()->flash('error', 'Name is required');
-                return back()->withErrors([
-                //return Response::redirectTo('/contacts/create')->withErrors([
-                    'name' => 'Name is required',
-                ]);
-            }else if (is_null($request->phone_number)) {
-                session()->flash('error', 'Phone number is required');
-                return back()->withErrors([
-                    'phone_number' => 'Phone number is required',
-                ]);
-            }else if (is_null($request->email)) {
-                session()->flash('error', 'Email is required');
-                return back()->withErrors([
-                    'email' => 'Email is required',
-                ]);
-            }else if (is_null($request->age)) {
-                session()->flash('error', 'Age is required');
-                return back()->withErrors([
-                    'age' => 'Age is required',
-                ]);
-            }*/
-
     Contact::create([
         'name' => $request->name,
-        'phone_number' => $request->phone_number
+        'phone_number' => $request->phone_number,
+        'email' => $request->email,
+        'age' => $request->age
     ]);
+
     session()->flash('success', 'Your contact has been added');
-    return redirect('/home');
+    return redirect()->route("home");
   }
 
   /**
@@ -82,7 +62,7 @@ class ContactController extends Controller
    */
   public function edit(Contact $contact)
   {
-    //
+    return view('contacts.edit', compact('contact'));
   }
 
   /**
@@ -90,7 +70,16 @@ class ContactController extends Controller
    */
   public function update(Request $request, Contact $contact)
   {
-    //
+    $data = $request->validate([
+        "name" => ["required","string"],
+        "phone_number" => ["required","digits:9"],
+        "email" => ["required","email",Rule::unique('contacts')->ignore($contact->id)],
+        "age" => ["required","min:18","numeric","max:255"],
+    ]);
+
+    $contact->update($data);
+    session()->flash('success', 'Your contact has been modified');
+    return redirect()->route("home");
   }
 
   /**

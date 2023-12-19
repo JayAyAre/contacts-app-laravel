@@ -8,7 +8,7 @@
           <div class="card-header">Create new contact</div>
 
           <div class="card-body">
-            <form method="POST" action="{{ route('contact.store') }}">
+            <form method="POST" action="{{ route('contacts.store') }}">
               @csrf
               <div class="row mb-3">
                 <label for="name" class="col-md-4 col-form-label text-md-end">Name</label>
@@ -52,7 +52,7 @@
                 <div class="col-md-6">
                   <input id="email" type="text"
                          class="form-control @error('email') is-invalid @enderror"
-                         name="phone_number"
+                         name="email"
                          value="{{old('email')}}"
                          autocomplete="email">
                   @error('email')
