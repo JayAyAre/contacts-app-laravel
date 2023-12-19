@@ -17,8 +17,12 @@
               <p class="m-2"><strong>Email:</strong> {{ $contact->email }}</p>
               <p class="m-2"><strong>Age:</strong> {{ $contact->age }}</p>
               <a href="{{route("contacts.edit",$contact->id)}}" class="btn btn-secondary">Edit contact</a>
-              {{--<a href="{{route("contact.destroy")}}" class="btn btn-danger">Delete contact</a>
-            --}}</div>
+              <form action="{{route("contacts.destroy",$contact->id)}}" method="POST">
+                @csrf
+                @method("DELETE")
+                <button type="submit" class="btn btn-danger">Delete contact</button>
+              </form>
+            </div>
           </div>
         </div>
       @empty

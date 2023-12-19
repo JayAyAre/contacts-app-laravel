@@ -30,19 +30,8 @@ Auth::routes();
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 Route::get('/contacts/create', [ContactController::class, 'create'])->name('contacts.create');
+Route::post('/contacts', [ContactController::class, 'store'])->name('contacts.store');
 Route::get('/contacts/{contact}/edit', [ContactController::class, 'edit'])->name('contacts.edit');
 Route::put('/contacts/{contact}/', [ContactController::class, 'update'])->name('contacts.update');
-Route::post('/contacts', [ContactController::class, 'store'])->name('contacts.store');
-
-/*Route::get('/contact', fn() => Response::view('contact'));
-
-Route::post('/contact', function (Request $request) {
-    $data = $request->all();
-    Contact::create($data);
-  $contact = new \App\Models\Contact();
-    $contact->name= $data['name'];
-    $contact->phone_number= $data['phone_number'];
-    $contact->save();
-    return "Contact Saved";
-});*/
+Route::delete('/contacts/{contact}/', [ContactController::class, 'destroy'])->name('contacts.destroy');
 
