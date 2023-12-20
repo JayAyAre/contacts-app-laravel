@@ -2,16 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreContactRequest;
+use App\Http\Requests\UpdateContactRequest;
 use App\Models\Contact;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Response;
 use Illuminate\Validation\Rule;
-use Symfony\Component\HttpFoundation\Response as ResponseAlias;
+
 
 class ContactController extends Controller
 {
   //php artisan make:controller -m Contact ContactController
   //php artisan tinker to test querys
+/*  protected $rules = [
+      "name" => ["required","string"],
+      "phone_number" => ["required","digits:9"],
+      "email" => ["required","email","unique:contacts,email"],
+      "age" => ["required","min:18","numeric","max:255"],
+  ];*/
 
   /**
    * Display a listing of the resource.
@@ -27,21 +34,17 @@ class ContactController extends Controller
    */
   public function create()
   {
+    $this->authorize('create', Contact::class);
     return view('contacts.create');
   }
 
   /**
    * Store a newly created resource in storage.
    */
-  public function store(Request $request)
+  public function store(StoreContactRequest $request)
   {
-    $data = $request->validate([
-      "name" => ["required","string"],
-      "phone_number" => ["required","digits:9"],
-      "email" => ["required","email","unique:contacts,email"],
-      "age" => ["required","min:18","numeric","max:255"],
-      ]);
-    auth()->user()->contacts()->create($data);
+    $this->authorize('create', Contact::class);
+    auth()->user()->contacts()->create($request->validated());
     session()->flash('success', 'Your contact has been added');
     return redirect()->route("home");
   }
@@ -52,8 +55,7 @@ class ContactController extends Controller
   public function show(Contact $contact)
   {
     $this->authorize('view', $contact);
-    $contacts = auth()->user()->contacts()->get();
-    return view('contacts.show', compact('contacts'));
+    return view('contacts.show', compact('contact'));
   }
 
   /**
@@ -71,13 +73,16 @@ class ContactController extends Controller
   public function update(Request $request, Contact $contact)
   {
     $this->authorize('update', $contact);
-    $data = $request->validate([
-        "name" => ["required","string"],
-        "phone_number" => ["required","digits:9"],
-        "email" => ["required","email",Rule::unique('contacts')->ignore($contact->id)],
-        "age" => ["required","min:18","numeric","max:255"],
+    //$rules = $this->rules;
+    //$rules['email'] = ["required", "email", Rule::unique('contacts')->ignore($contact->id)];
+    //$data = $request->validate($rules);
+    $rules = $request->validate([
+        "name" => ["required", "string"],
+        "phone_number" => ["required", "digits:9"],
+        "email" => ["required", "email", Rule::unique('contacts')->ignore($contact->id)],
+        "age" => ["required", "min:18", "numeric", "max:255"],
     ]);
-    auth()->user()->contacts()->update($data);
+    $contact->update($rules);
     session()->flash('success', 'Your contact has been modified');
     return redirect()->route("home");
   }
