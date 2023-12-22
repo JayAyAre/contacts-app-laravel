@@ -13,19 +13,23 @@ class ContactController extends Controller
 {
   //php artisan make:controller -m Contact ContactController
   //php artisan tinker to test querys
-/*  protected $rules = [
-      "name" => ["required","string"],
-      "phone_number" => ["required","digits:9"],
-      "email" => ["required","email","unique:contacts,email"],
-      "age" => ["required","min:18","numeric","max:255"],
-  ];*/
+  /*  protected $rules = [
+        "name" => ["required","string"],
+        "phone_number" => ["required","digits:9"],
+        "email" => ["required","email","unique:contacts,email"],
+        "age" => ["required","min:18","numeric","max:255"],
+    ];*/
 
   /**
    * Display a listing of the resource.
    */
   public function index()
   {
+    $this->authorize('viewAny', Contact::class);
     $contacts = auth()->user()->contacts()->get();
+    session()->flash('alert',
+        ['message' => 'Yours contacts has been shown',
+            'type' => 'info']);
     return view('contacts.index', compact('contacts'));
   }
 
@@ -45,8 +49,9 @@ class ContactController extends Controller
   {
     $this->authorize('create', Contact::class);
     auth()->user()->contacts()->create($request->validated());
-    session()->flash('success', 'Your contact has been added');
-    return redirect()->route("home");
+    return redirect('home')->with('alert',
+        ['message' => 'Yours contacts has been shown',
+            'type' => 'info']);
   }
 
   /**
@@ -83,7 +88,9 @@ class ContactController extends Controller
         "age" => ["required", "min:18", "numeric", "max:255"],
     ]);
     $contact->update($rules);
-    session()->flash('success', 'Your contact has been modified');
+    session()->flash('alert',
+        ['message' => 'Your contact ' . $contact->name . ' has been updated',
+            'type' => 'success']);
     return redirect()->route("home");
   }
 
@@ -93,6 +100,9 @@ class ContactController extends Controller
   public function destroy(Contact $contact)
   {
     $this->authorize('delete', $contact);
+    session()->flash('alert',
+        ['message' => 'Your contact ' . $contact->name . ' has been deleted',
+            'type' => 'info']);
     $contact->delete();
     return redirect()->route("home");
   }

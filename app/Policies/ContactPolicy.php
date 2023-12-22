@@ -13,7 +13,7 @@ class ContactPolicy
      */
     public function viewAny(User $user): bool
     {
-        return true;
+        return $user->id === auth()->user()->id;
     }
 
     /**
@@ -29,7 +29,7 @@ class ContactPolicy
      */
     public function create(User $user): bool
     {
-      return $user->can('create', Contact::class);
+      return auth()->user()->id;
     }
 
     /**
