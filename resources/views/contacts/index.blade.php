@@ -16,6 +16,16 @@
           <p class="me-2 mb-0 d-none d-md-block">Email:<a
                 href="mailto:{{ $contact->email }}"> {{ $contact->email }}</a></p>
           <p class="me-2 mb-0">Age: {{ $contact->age }}</p>
+          <a class="btn btn-secondary mb-0 me-2 p-1 px-2" href="{{route("contacts.edit",$contact->id)}}">
+            <x-icon icon="pencil"></x-icon>
+          </a>
+          <form action="{{route("contacts.destroy",$contact->id)}}" method="POST">
+            @csrf
+            @method("DELETE")
+            <button type="submit" class="btn btn-danger mb-0 p-1 px-2">
+              <x-icon icon="trash"></x-icon>
+            </button>
+          </form>
         </div>
       </div>
     @empty

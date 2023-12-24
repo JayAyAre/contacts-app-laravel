@@ -104,6 +104,6 @@ class ContactController extends Controller
         ['message' => 'Your contact ' . $contact->name . ' has been deleted',
             'type' => 'info']);
     $contact->delete();
-    return redirect()->route("home");
+    return back();
   }
 }
