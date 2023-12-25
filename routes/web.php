@@ -20,6 +20,14 @@ use Illuminate\Support\Facades\DB;
 |$contact be assigned to the "web" middleware group. Make something great!
 |
 */
+Route::get('/billing-portal', function (Request $request) {
+  return $request->user()->redirectToBillingPortal();
+});
+Route::get('/checkout', function (Request $request) {
+  return $request->user()
+      ->newSubscription('default', config('stripe.price_id'))
+      ->checkout();
+});
 
 Route::get('/', fn() => auth()->check() ? redirect('/home') : redirect('/welcome'));
 
@@ -29,6 +37,7 @@ Route::get('/home', [HomeController::class, 'index'])->name('home');
 Route::get('/welcome', [HomeController::class, 'welcome'])->name('welcome');
 
 Route::resource('contacts', ContactController::class);
+
 
 //Route::get('/contacts/create', [ContactController::class, 'create'])->name('contacts.create');
 //Route::post('/contacts', [ContactController::class, 'store'])->name('contacts.store');
