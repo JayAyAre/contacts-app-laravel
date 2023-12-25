@@ -40,5 +40,5 @@
           </div>
         </div>
   @endforelse
-
+  {{$contacts->links()}}
 @endsection

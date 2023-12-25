@@ -26,7 +26,8 @@ class ContactController extends Controller
   public function index()
   {
     $this->authorize('viewAny', Contact::class);
-    $contacts = auth()->user()->contacts()->get();
+    $contacts = auth()->user()->contacts()->orderBy('created_at', 'desc')->paginate(6);
+    //    $contacts = auth()->user()->contacts()->latest()->take(6)->get();
     return view('contacts.index', compact('contacts'));
   }
 
@@ -49,7 +50,7 @@ class ContactController extends Controller
 
 
     $data = $request->validated();
-    if($request->hasFile('profile_picture')){
+    if ($request->hasFile('profile_picture')) {
       $path = $request->file('profile_picture')->store('profiles', 'public');
       $data['profile_picture'] = $path;
     }
@@ -96,7 +97,7 @@ class ContactController extends Controller
         "profile_picture" => ["image", "mimes:jpeg,png,jpg,gif,svg"],
     ]);
 
-    if($request->hasFile('profile_picture')){
+    if ($request->hasFile('profile_picture')) {
       $path = $request->file('profile_picture')->store('profiles', 'public');
       $rules['profile_picture'] = $path;
     }

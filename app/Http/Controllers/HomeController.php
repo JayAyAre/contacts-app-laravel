@@ -25,7 +25,7 @@ class HomeController extends Controller
    */
   public function index()
   {
-    $contacts = auth()->user()->contacts()->get();
+    $contacts = auth()->user()->contacts()->orderBy('created_at', 'desc')->paginate(6);
     return view('home', compact('contacts'));
   }
 
