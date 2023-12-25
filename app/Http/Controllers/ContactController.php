@@ -27,9 +27,6 @@ class ContactController extends Controller
   {
     $this->authorize('viewAny', Contact::class);
     $contacts = auth()->user()->contacts()->get();
-    session()->flash('alert',
-        ['message' => 'Yours contacts has been shown',
-            'type' => 'info']);
     return view('contacts.index', compact('contacts'));
   }
 
@@ -48,7 +45,16 @@ class ContactController extends Controller
   public function store(StoreContactRequest $request)
   {
     $this->authorize('create', Contact::class);
-    auth()->user()->contacts()->create($request->validated());
+    //($request->hasFile('profile_picture')) && $data['profile_picture'] = $request->file('profile_picture')->store('public/profiles');
+
+
+    $data = $request->validated();
+    if($request->hasFile('profile_picture')){
+      $path = $request->file('profile_picture')->store('profiles', 'public');
+      $data['profile_picture'] = $path;
+    }
+    auth()->user()->contacts()->create($data);
+
     return redirect('home')->with('alert',
         ['message' => 'Yours contacts has been shown',
             'type' => 'info']);
@@ -81,12 +87,20 @@ class ContactController extends Controller
     //$rules = $this->rules;
     //$rules['email'] = ["required", "email", Rule::unique('contacts')->ignore($contact->id)];
     //$data = $request->validate($rules);
+
     $rules = $request->validate([
         "name" => ["required", "string"],
         "phone_number" => ["required", "digits:9"],
         "email" => ["required", "email", Rule::unique('contacts')->ignore($contact->id)],
         "age" => ["required", "min:18", "numeric", "max:255"],
+        "profile_picture" => ["image", "mimes:jpeg,png,jpg,gif,svg"],
     ]);
+
+    if($request->hasFile('profile_picture')){
+      $path = $request->file('profile_picture')->store('profiles', 'public');
+      $rules['profile_picture'] = $path;
+    }
+
     $contact->update($rules);
     session()->flash('alert',
         ['message' => 'Your contact ' . $contact->name . ' has been updated',

@@ -12,7 +12,12 @@
         <div class="col-md-4 mb-3">
           <div class="card text-center">
             <div class="card-body">
-              <a class = "text-decoration-none text-light" href="{{route("contacts.show",$contact->id)}}">
+              <div class="mb-2">
+                <a href="{{route("contacts.show",$contact->id)}}">
+                  <img class="profile_picture" src="{{Storage::url($contact->profile_picture)}}">
+                </a>
+              </div>
+              <a class="text-decoration-none text-light" href="{{route("contacts.show",$contact->id)}}">
                 <h3 class="card-title text-capitalize">{{$contact->name}}</h3>
               </a>
               <p class="m-2"><strong>Phone:</strong> {{ $contact->phone_number}}</p>
