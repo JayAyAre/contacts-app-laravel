@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ContactShared;
 use App\Models\Contact;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rule;
 use function PHPUnit\Framework\assertIsNotInt;
 
@@ -61,6 +63,7 @@ class ContactShareController extends Controller
           'type' => 'warning',
       ]);
     } else {
+      Mail::to($user)->send(new ContactShared(auth()->user()->email, $contact->email));
       return redirect('home')->with('alert', [
           'message' => 'Your contact ' . $contact->name . ' has been shared with ' . $user->name,
           'type' => 'success',
