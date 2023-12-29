@@ -62,6 +62,12 @@
             <li class="nav-item">
               <a class="nav-link" href="{{ route('contacts.create') }}">Create new contact</a>
             </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ route('contact-shares.create') }}">Share contacts</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ route('contact-shares.index') }}">Shared contacts</a>
+            </li>
             <li class="nav-item dropdown">
               <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button"
                  data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
@@ -86,15 +92,20 @@
     </div>
   </nav>
   <main class="py-4">
-    @if($alert = session()->get('alert'))
-      <x-alert :type="$alert['type']" :message="$alert['message']" />
+    @if($alert = session()->get('alert') && isset($alert['type']) && isset($alert['message']))
+      <x-alert :type="$alert['type']" :message="$alert['message']"/>
     @endif
-    @if(auth()->user()?->onTrial() && !auth()->user()?->subscribed())
-      @php
-        $freeRemainingDays = now()->diffInDays(auth()->user()->trial_ends_at);
-      @endphp
-      <x-alert type="info" message="Your free trial will expire on {{ $freeRemainingDays }} days ({{auth()->user()->trial_ends_at->format('d/m/Y H:i:s')}})" />
-    @endif
+    @php
+      $lastAlertDate = session('last_trial_alert_date');
+      $currentDate = now();
+      $showAlert = !$lastAlertDate || $currentDate->diffInDays($lastAlertDate) >= 1;
+
+      if ($showAlert && auth()->user() && !auth()->user()->subscribed() && auth()->user()->onTrial()) {
+          $freeTrialRemainingDays = now()->diffInDays(auth()->user()->trial_ends_at);
+          echo '<x-alert type="info" message="Trial ends in ' . $freeTrialRemainingDays . ' days. Upgrade <a href=\'' . route('checkout') . '\'>here</a>\'/>';
+          session(['last_trial_alert_date' => $currentDate]);
+      }
+    @endphp
     @yield('content')
   </main>
 </div>

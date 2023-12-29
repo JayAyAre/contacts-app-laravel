@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreContactRequest extends FormRequest
 {
@@ -25,9 +26,25 @@ class StoreContactRequest extends FormRequest
     return [
         "name" => ["required", "string"],
         "phone_number" => ["required", "digits:9"],
-        "email" => ["required", "email", "unique:contacts,email"],
+        "email" => ["required",
+            "email",
+            Rule::unique("contacts", "email")
+                ->where('user_id', auth()->id())
+                ->ignore($this->contact)],
         "age" => ["required", "min:18", "numeric", "max:255"],
-        "profile_picture" => ["image","nullable"],
+        "profile_picture" => ["image", "nullable"],
+    ];
+  }
+
+  public function messages(): array
+  {
+    return [
+        "name.required" => "Name is required",
+        "phone_number.required" => "Phone number is required",
+        "email.required" => "Email is required",
+        "email.unique" => "This email already exists on one of our contacts",
+        "age.required" => "Age is required",
+        "profile_picture.image" => "Profile picture must be an image",
     ];
   }
 }
