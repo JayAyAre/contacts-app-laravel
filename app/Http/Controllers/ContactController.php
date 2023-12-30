@@ -6,6 +6,7 @@ use App\Http\Requests\StoreContactRequest;
 use App\Http\Requests\UpdateContactRequest;
 use App\Models\Contact;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\Rule;
 
 
@@ -54,6 +55,8 @@ class ContactController extends Controller
       $path = $request->file('profile_picture')->store('profiles', 'public');
       $data['profile_picture'] = $path;
     }
+
+    Cache::forget('home' . auth()->user()->id);
     auth()->user()->contacts()->create($data);
 
     return redirect('home')->with('alert',
@@ -102,6 +105,7 @@ class ContactController extends Controller
       $rules['profile_picture'] = $path;
     }
 
+    Cache::forget('home' . auth()->user()->id);
     $contact->update($rules);
     session()->flash('alert',
         ['message' => 'Your contact ' . $contact->name . ' has been updated',
@@ -118,6 +122,7 @@ class ContactController extends Controller
     session()->flash('alert',
         ['message' => 'Your contact ' . $contact->name . ' has been deleted',
             'type' => 'info']);
+    Cache::forget('home' . auth()->user()->id);
     $contact->delete();
     return back();
   }

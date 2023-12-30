@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Contact;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class HomeController extends Controller
 {
@@ -16,7 +17,9 @@ class HomeController extends Controller
    */
   public function index()
   {
-    $contacts = auth()->user()->contacts()->orderBy('created_at', 'desc')->paginate(6);
+    $contacts = Cache::remember('home'.auth()->user()->id,
+        now()->addMinutes(30),
+        fn () => auth()->user()->contacts()->paginate(10));
     return view('home', compact('contacts'));
   }
 
