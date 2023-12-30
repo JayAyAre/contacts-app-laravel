@@ -17,6 +17,9 @@ class HomeController extends Controller
    */
   public function index()
   {
+    $this->authorize('viewAny', Contact::class);
+
+    Cache::forget('home'.auth()->user()->id);
     $contacts = Cache::remember('home'.auth()->user()->id,
         now()->addMinutes(30),
         fn () => auth()->user()->contacts()->paginate(10));
