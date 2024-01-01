@@ -53,17 +53,18 @@ class ContactShareController extends Controller
 
     }*/
 
-    $sharedExists = $contact->sharedWithUsers->where('user_id', $user->id)->first();
+    $shareExists = $contact->sharedWithUsers()->wherePivot('user_id', $user->id)->first();
 
-    $contact->sharedWithUsers()->attach($user);
 
-    if ($sharedExists) {
+    if ($shareExists) {
       return redirect('home')->with('alert', [
-          'message' => 'Your contact ' . $contact->name . ' has already been shared with ' . $user->name,
+          'contact_email' => 'Your contact ' . $contact->name . ' has already been shared with ' . $user->name,
           'type' => 'warning',
-      ]);
+      ])->withErrors(
+          ['contact_email'=> 'Your contact ' . $contact->name . ' has already been shared with ' . $user->name]);
     } else {
-      Mail::to($user)->send(new ContactShared(auth()->user()->email, $contact->email));
+      $contact->sharedWithUsers()->attach($user);
+      //Mail::to($user)->send(new ContactShared(auth()->user()->email, $contact->email));
       return redirect('home')->with('alert', [
           'message' => 'Your contact ' . $contact->name . ' has been shared with ' . $user->name,
           'type' => 'success',
